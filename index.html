@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پێوەری خەمۆکی | هەڵسەنگاندنی دەروونی</title>
+    <style>
+        /* شێوازی گشتی - General Styles */
+        :root {
+            --bg-color: #0f0f11; /* ڕەنگی تاریک بۆ پاشبنەما */
+            --card-color: rgba(30, 30, 35, 0.95);
+            --text-color: #e0e0e0;
+            --accent-color: #7d8c9e; /* شینێکی خۆڵەمێشی بۆ دوگمەکان */
+            --warning-color: #8a3b3b; /* سوورێکی تاریک بۆ حاڵەتی خەمۆکی */
+            --font-main: 'Times New Roman', serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            background-image: url('bg.jpg'); /* وێنەکە لێرە بانگ دەکرێت */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: var(--card-color);
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border: 1px solid #333;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            font-weight: normal;
+            border-bottom: 1px solid #444;
+            padding-bottom: 15px;
+        }
+
+        p.subtitle {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        /* بەشی پرسیارەکان */
+        .question-box {
+            display: none; /* سەرەتا شاردراوەیە */
+            animation: fadeIn 0.8s;
+        }
+
+        .question-text {
+            font-size: 20px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: transparent;
+            border: 1px solid #555;
+            color: var(--text-color);
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: var(--font-main);
+        }
+
+        .options button:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: #000;
+        }
+
+        /* بەشی سەرەتا */
+        #start-screen {
+            display: block;
+        }
+        
+        #start-btn {
+            background: var(--accent-color);
+            color: #111;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* بەشی ئەنجام */
+        #result-screen {
+            display: none;
+        }
+
+        .score-circle {
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px auto;
+            font-size: 24px;
+        }
+
+        .result-message {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .quote-box {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            margin-top: 20px;
+            border-right: 3px solid var(--accent-color);
+            text-align: right;
+            font-style: italic;
+            font-size: 15px;
+            line-height: 1.8;
+            display: none; /* تەنها بۆ خەمۆکی توند دەردەکەوێت */
+        }
+
+        .advice-list {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #ccc;
+            list-style: none;
+            padding: 0;
+            display: none;
+        }
+
+        .advice-list li {
+            margin-bottom: 10px;
+            padding-right: 15px;
+            border-right: 1px solid #555;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container" id="main-container">
+        
+        <div id="start-screen">
+            <h1>هەڵسەنگاندنی باری دەروونی</h1>
+            <p class="subtitle">ئەم تێستە بنچینەی زانستی هەیە، بەڵام جێگەی پزیشک ناگرێتەوە. تکایە بە ڕاستگۆیی وەڵام بدەرەوە.</p>
+            <button id="start-btn" onclick="startQuiz()">دەستپێکردن</button>
+        </div>
+
+        <div id="quiz-box" class="question-box">
+            <p id="question-text" class="question-text">پرسیار لێرە دەنووسرێت...</p>
+            <div class="options">
+                <button onclick="selectOption(0)">بەهیچ شێوەیەک</button>
+                <button onclick="selectOption(1)">هەندێک جار</button>
+                <button onclick="selectOption(2)">زۆربەی کات</button>
+                <button onclick="selectOption(3)">هەموو کات</button>
+            </div>
+            <p style="font-size: 12px; color: #666; margin-top: 20px;">پرسیاری <span id="q-number">1</span> لە 10</p>
+        </div>
+
+        <div id="result-screen">
+            <div class="score-circle" id="score-display">0</div>
+            <h2 class="result-message" id="result-text"></h2>
+            <p id="result-desc" style="color: #aaa; font-size: 14px;"></p>
+            
+            <div id="severe-content">
+                <div class="quote-box">
+                    "مرۆڤ تەنها حەز دەکات ژمارەی ناخۆشییەکانی بژمێرێت؛ ئەو هەرگیز بەختەوەرییەکانی هەژمار ناکات."
+                    <br><br>
+                    - فیۆدۆر دۆستۆیێڤسکی
+                </div>
+                <ul class="advice-list" style="display: block;">
+                    <li>تکایە ئەم ئەنجامە بە هەند وەربگرە.</li>
+                    <li>قسەکردن لەگەڵ کەسێکی نزیک یان پزیشک یەکەم هەنگاوی چارەسەرە.</li>
+                    <li>تۆ بە تەنها نیت، ئەم دۆخە کاتییە و تێدەپەڕێت.</li>
+                </ul>
+            </div>
+
+            <button onclick="location.reload()" style="background: transparent; border: 1px solid #555; color: #888; padding: 10px 20px; margin-top: 30px; cursor: pointer;">دووبارەکردنەوە</button>
+        </div>
+
+    </div>
+
+    <script>
+        // داتای پرسیارەکان
+        const questions = [
+            "تا چەند هەست بە بێزاری و کەمیی ئارەزوو دەکەیت لە ئەنجامدانی ئەو کارانەی جاران چێژت لێ دەبینین؟",
+            "تا چەند هەست بە بێهێزی، خەمباری، یان بێ ئومێدی دەکەیت؟",
+            "ئایا کێشەت لە خەوتندا هەیە (درەنگ خەوتن، یان زۆر خەوتن)؟",
+            "تا چەند هەست بە ماندوێتییەکی زۆر دەکەیت و وزەت کەمە بۆ ڕاپەڕاندنی کارەکانت؟",
+            "ئایا گۆڕانکاری لە ئارەزووی خواردنتدا ڕوویداوە (زۆرخۆری یان نەمانی ئارەزوو)؟",
+            "تا چەند هەست بە بێزاری لە خۆت دەکەیت یان وا هەست دەکەی شکستت هێناوە؟",
+            "ئایا کێشەی تەرکیزت هەیە (بۆ نموونە لە کاتی خوێندنەوە یان تەماشاکردنی فیلم)؟",
+            "ئایا جوڵە و قسەکردنت هێندە خاو بووەتەوە کە دەوروبەرت هەستی پێ بکەن؟ (یان بە پێچەوانەوە، زۆر شڵەژاوی)؟",
+            "تا چەند هەست بە پوچی دەکەیت و پێت وایە داهاتوو هیچ هیوایەکی تێدا نییە؟",
+            "ئایا بیرۆکەی ئەوەت بۆ دێت کە ئازاری خۆت بدەیت یان کۆتایی بە ژیانت بهێنیت؟"
+        ];
+
+        let currentQuestionIndex = 0;
+        let totalScore = 0;
+
+        function startQuiz() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-box').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            document.getElementById('question-text').innerText = questions[currentQuestionIndex];
+            document.getElementById('q-number').innerText = currentQuestionIndex + 1;
+        }
+
+        function selectOption(score) {
+            totalScore += score;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                // Animate transition
+                let box = document.getElementById('quiz-box');
+                box.style.opacity = 0;
+                setTimeout(() => {
+                    showQuestion();
+                    box.style.opacity = 1;
+                }, 300);
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-box').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            
+            const scoreDisplay = document.getElementById('score-display');
+            const resultText = document.getElementById('result-text');
+            const resultDesc = document.getElementById('result-desc');
+            const severeContent = document.getElementById('severe-content');
+            const container = document.getElementById('main-container');
+
+            scoreDisplay.innerText = totalScore;
+
+            // Logic for Results
+            if (totalScore <= 7) {
+                resultText.innerText = "باری دەروونی جێگیر";
+                resultDesc.innerText = "هیچ نیشانەیەکی دیاری خەمۆکی بوونی نییە.";
+                severeContent.style.display = 'none';
+                scoreDisplay.style.borderColor = "#7d8c9e";
+            } 
+            else if (totalScore <= 14) {
+                resultText.innerText = "خەمۆکی کەم";
+                resultDesc.innerText = "پێویستت بە گۆڕینی ڕۆتین و ئەنجامدانی چالاکی نوێیە.";
+                severeContent.style.display = 'none';
+                scoreDisplay.style.borderColor = "#c9c955";
+            }
+            else if (totalScore <= 22) {
+                resultText.innerText = "خەمۆکی مامناوەند";
+                resultDesc.innerText = "باشترە ڕاوێژ بە کەسێکی پسپۆڕ بکەیت بۆ تێپەڕاندنی ئەم دۆخە.";
+                severeContent.style.display = 'none'; // Still hiding strict visuals
+                scoreDisplay.style.borderColor = "orange";
+            }
+            else {
+                // SEVERE CASE
+                resultText.innerText = "خەمۆکی توند";
+                resultText.style.color = "#ff6b6b";
+                resultDesc.innerText = "تکایە پشتگوێی مەخە. ئەم ئەنجامە ئاماژەیە بۆ پێویستی بە هاوکاری.";
+                
+                // Change UI specifically for severe cases
+                container.style.borderColor = "#8a3b3b";
+                scoreDisplay.style.borderColor = "#8a3b3b";
+                scoreDisplay.style.color = "#ff6b6b";
+                
+                // Show the quote and advice
+                severeContent.style.display = 'block';
+                document.querySelector('.quote-box').style.display = 'block';
+                document.querySelector('.advice-list').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
